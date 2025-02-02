@@ -23,7 +23,7 @@ function output_notes() {
 function convert() {
 for f in output/iCloud.*.html; do
     name="$(echo "$f" | sed 's:output/iCloud.\(.*\).html:apple.note.\1:')"
-    pandoc --from html --to markdown-raw_attribute-raw_html --lua-filter=strip-html.lua --extract-media="converted/$name.includes" -o "converted/$name.md" "$f"
+    pandoc --from html --to markdown-raw_attribute-raw_html --lua-filter="$(location)"/strip-html.lua --extract-media="converted/$name.includes" -o "converted/$name.md" "$f"
 done
 }
 
