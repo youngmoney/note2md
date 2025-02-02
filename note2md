@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+function location() {
+    local location="$(cd $(dirname $([ -L "${BASH_SOURCE}" ] && readlink "${BASH_SOURCE}" || echo "${BASH_SOURCE}")) && pwd)"
+    if [ -L "${location}" ]; then
+        readlink "${location}"
+    else
+        echo "${location}"
+    fi
+}
+
+function setup() {
+    mkdir -p output
+    mkdir -p converted
+}
+
+function output_notes() {
+    cd output || exit 1
+    osascript ../export.scpt
+    cd ..
+}
+
+function convert() {
+for f in output/iCloud.*.html; do
+    name="$(echo "$f" | sed 's:output/iCloud.\(.*\).html:apple.note.\1:')"
+    echo "$name"
+    pandoc --from html --to markdown-raw_attribute-raw_html --lua-filter=strip-html.lua --extract-media="converted/$name.includes" -o "converted/$name.md" "$f"
+done
+}
+
+function run() {
+    start="$(pwd)"
+    setup
+    output_notes
+    cd "$start"
+    convert
+}
+
+run
