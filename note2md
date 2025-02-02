@@ -16,14 +16,13 @@ function setup() {
 
 function output_notes() {
     cd output || exit 1
-    osascript ../export.scpt
+    osascript "$(location)"/export.scpt
     cd ..
 }
 
 function convert() {
 for f in output/iCloud.*.html; do
     name="$(echo "$f" | sed 's:output/iCloud.\(.*\).html:apple.note.\1:')"
-    echo "$name"
     pandoc --from html --to markdown-raw_attribute-raw_html --lua-filter=strip-html.lua --extract-media="converted/$name.includes" -o "converted/$name.md" "$f"
 done
 }
